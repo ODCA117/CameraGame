@@ -12,7 +12,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.Random;
 
 import static android.content.ContentValues.TAG;
 
@@ -28,6 +31,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private int[] pixels = null;
     private Camera.Parameters params;
     private TextView data1;
+    private PropertyChangeSupport change;
+    private int position;
+    private Random random;
 
     public static final int WIDTH = 640;
     public static final int HEIGT = 480;
@@ -37,6 +43,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         params = mCamera.getParameters();
         imageFormat = params.getPreviewFormat();
+        change = new PropertyChangeSupport(this);
+        random = new Random(0);
 
         //Make sure that the preview size actually exists, and set it to our values
         for (Camera.Size previewSize: mCamera.getParameters().getSupportedPreviewSizes())
@@ -61,6 +69,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         this.data1 = data1;
 
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        change.addPropertyChangeListener(listener);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -124,10 +136,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
 
             myCameraPreview.invalidate();
-            mProcessInProgress = true;
-            mCamera.addCallbackBuffer(bytes);
-            // Start our background thread to process images
-            new ProcessPreviewDataTask().execute(bytes);
+            if(!mProcessInProgress) {
+                mProcessInProgress = true;
+                mCamera.addCallbackBuffer(bytes);
+                // Start our background thread to process images
+                new ProcessPreviewDataTask().execute(bytes);
+            }
 
         }
     }
@@ -148,8 +162,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             // Here we decode the image to a RGB array.
             pixels = decodeYUV420SP(data, tempWidth, tempHeight);
             /*TODO here you're going to change pixel colors.*/
+
+
+            position = random.nextInt(WIDTH) + 20;
             
             mCamera.addCallbackBuffer(data);
+
             mProcessInProgress = false;
             return true;
         }
@@ -159,6 +177,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             myCameraPreview.invalidate();
             mBitmap.setPixels(pixels, 0, HEIGT,0, 0, HEIGT, WIDTH);
             myCameraPreview.setImageBitmap(mBitmap);
+
+            change.firePropertyChange("position", null, position);
 
             data1.setText(Integer.toHexString(pixels[0]));
         }

@@ -12,7 +12,7 @@ public class DisplayThread extends Thread {
 
     private SurfaceHolder holder;
     private Context context;
-    private boolean running;
+    volatile private boolean running;
     private GameEngine gameEngine;
     private Paint backgroundPaint;
 
@@ -30,9 +30,7 @@ public class DisplayThread extends Thread {
     public void run() {
 
         while (running) {
-            //TODO: update the engine
-            if(!gameEngine.update())
-                running = false;
+            gameEngine.update();
             Canvas canvas = holder.lockCanvas(null);
 
             if(canvas != null) {

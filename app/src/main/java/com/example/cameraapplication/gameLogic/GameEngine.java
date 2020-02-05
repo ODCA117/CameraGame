@@ -2,8 +2,13 @@ package com.example.cameraapplication.gameLogic;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.nfc.Tag;
 import android.util.Log;
 
+import com.example.cameraapplication.CameraPreview;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +16,7 @@ import java.util.Random;
 
 import static android.content.ContentValues.TAG;
 
-public class GameEngine {
+public class GameEngine implements PropertyChangeListener {
 
     private int width;
     private int height;
@@ -21,23 +26,31 @@ public class GameEngine {
     private long timeToSpawn;
     private Random random;
 
-    public GameEngine() {
+    private int goalPosition;
+    private int counter;
 
+    public GameEngine(CameraPreview cameraPreview) {
+        cameraPreview.addPropertyChangeListener(this);
+        goalPosition = 500;
+        counter = 0;
+        gameOn = false;
     }
 
-    public boolean update() {
-        //TODO: Game updates
-        Log.d(TAG, "Update game");
+    public void update() {
+        if(!gameOn)
+            return;
+
+        //Log.d(TAG, "Update game");
         updatePlayerPosition();
         updateObstaclePosition();
         checkCollision();
         spawnObstacles();
-        return gameOn;
     }
 
     public void draw(Canvas canvas) {
-        //TODO: Draw game here
-        Log.d(TAG, "Draw game");
+        if(!gameOn)
+            return;
+        //Log.d(TAG, "Draw game");
         player.drawPlayer(canvas);
 
         for (Obstacle o : obstacles) {
@@ -48,11 +61,18 @@ public class GameEngine {
     public void initGame(int height, int width) {
         this.height = height;
         this.width = width;
-        player = new Player(20, height - 120, 100, 5, 1);
+    }
+
+    public void restart() {
+        player = new Player(20, height - 120, 100, 1);
         obstacles = new ArrayList<>();
         random = new Random(0);
         timeToSpawn = System.currentTimeMillis() + 2000;
         gameOn = true;
+    }
+
+    public boolean running() {
+        return gameOn;
     }
 
     private void checkCollision() {
@@ -67,12 +87,6 @@ public class GameEngine {
     }
 
     private void updatePlayerPosition() {
-        int x = player.getX();
-        if (x > width - 120)
-            player.changeDirection();
-        if(x < 20)
-            player.changeDirection();
-
         player.updatePosition();
     }
 
@@ -99,5 +113,15 @@ public class GameEngine {
             obstacles.add(o);
             timeToSpawn = System.currentTimeMillis() + 2000;
         }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (!gameOn)
+            return;
+
+        //Log.d(TAG, "player goal position: " + (int) evt.getNewValue());
+
+        player.setGoalPosition((int)evt.getNewValue());
     }
 }

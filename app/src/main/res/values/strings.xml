@@ -3,4 +3,5 @@
     <string name="start_camera">Start Camera</string>
     <string name="camera_data1">Data1</string>
     <string name="camera_data2">Data2</string>
+    <string name="start_game_button">Start Game</string>
 </resources>

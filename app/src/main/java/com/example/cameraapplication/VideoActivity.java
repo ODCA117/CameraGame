@@ -37,15 +37,10 @@ public class VideoActivity extends AppCompatActivity {
         // Create a layout to put our image.
         layoutForImage = findViewById(R.id.camera_layout);
 
-        //initialize gameView
 
-        gameEngine = new GameEngine();
-        gameView = findViewById(R.id.gameView);
-        gameView.init(gameEngine);
 
         //initialize camera Data textview
         data1 = findViewById(R.id.camera_data1);
-
 
         // Creates our own camera preview object to  be able to make changes to the previews.
         mPreview = new CameraPreview(this, mCamera, convertedImageView, layoutForImage, data1);
@@ -55,7 +50,10 @@ public class VideoActivity extends AppCompatActivity {
         preview = (FrameLayout) findViewById(R.id.frame_view);
         preview.addView(mPreview, 0);
 
-        //add playerRectangle to this activitys view
+        //initialize gameView
+        gameView = findViewById(R.id.gameView);
+        gameEngine = new GameEngine(mPreview);
+        gameView.init(gameEngine);
 
         //This is done to not show the real preview frame, and only our ImageView.
         preview.setVisibility(View.INVISIBLE);
@@ -114,6 +112,15 @@ public class VideoActivity extends AppCompatActivity {
             // Camera is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable
+    }
+
+    public void onClick(View view) {
+        if(!gameEngine.running())
+            restartGame();
+    }
+
+    public void restartGame() {
+        gameEngine.restart();
     }
 
 }
