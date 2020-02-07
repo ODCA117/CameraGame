@@ -163,6 +163,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             pixels = decodeYUV420SP(data, tempWidth, tempHeight);
             /*TODO here you're going to change pixel colors.*/
 
+            Log.d(TAG, "size of pizels array: " + pixels.length);
+
 
             position = random.nextInt(WIDTH) + 20;
             
