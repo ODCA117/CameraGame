@@ -1,0 +1,37 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:1-6:12
+	package
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:3:7-27
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+	android:versionName
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:5:7-34
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:2:11-69
+	android:versionCode
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml:4:7-33
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+uses-sdk
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		ADDED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml
+		INJECTED from /home/olle/git/CameraApplication/opencv/src/main/AndroidManifest.xml

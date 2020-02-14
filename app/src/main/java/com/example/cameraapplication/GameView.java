@@ -28,6 +28,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void init(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         displayThread = new DisplayThread(holder, getContext(), gameEngine);
+        Log.d(TAG, "Surfaced size: " + this.getWidth() + ", " + this.getHeight() );
+
     }
 
     @Override
@@ -44,7 +46,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.d(TAG, "Surfaced Changed");
+        Log.d(TAG, "Surfaced Changed:");
+
+
     }
 
     @Override

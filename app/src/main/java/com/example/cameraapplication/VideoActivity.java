@@ -3,6 +3,7 @@ package com.example.cameraapplication;
 import android.hardware.Camera;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -13,6 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cameraapplication.gameLogic.GameEngine;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.core.Mat;
+
 public class VideoActivity extends AppCompatActivity {
     Camera mCamera;
     CameraPreview mPreview;
@@ -22,6 +27,7 @@ public class VideoActivity extends AppCompatActivity {
     GameView gameView;
     TextView data1;
     GameEngine gameEngine;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,7 @@ public class VideoActivity extends AppCompatActivity {
 
         // Creates our own camera preview object to  be able to make changes to the previews.
         mPreview = new CameraPreview(this, mCamera, convertedImageView, layoutForImage, data1);
+        mPreview.setVisibility(View.INVISIBLE);
 
 
         // Add our camerapreview to this activitys layout.
@@ -115,8 +122,10 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     public void onClick(View view) {
-        if(!gameEngine.running())
+        if(!gameEngine.running()) {
             restartGame();
+            mPreview.setVisibility(View.VISIBLE);
+        }
     }
 
     public void restartGame() {

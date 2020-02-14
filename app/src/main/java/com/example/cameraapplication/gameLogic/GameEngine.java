@@ -48,9 +48,11 @@ public class GameEngine implements PropertyChangeListener {
     }
 
     public void draw(Canvas canvas) {
+
+        //Log.e(TAG, "width: " + canvas.getWidth());
         if(!gameOn)
             return;
-        //Log.d(TAG, "Draw game");
+        Log.d(TAG, "Draw game");
         player.drawPlayer(canvas);
 
         for (Obstacle o : obstacles) {
@@ -109,7 +111,7 @@ public class GameEngine implements PropertyChangeListener {
         //spawn new obstacle
         if(timeToSpawn < System.currentTimeMillis()) {
             int x = 20 + random.nextInt(width - 40);
-            Obstacle o = new Obstacle(x, -120, 100, 100, 5);
+            Obstacle o = new Obstacle(x, -120, 100, 100, 15);
             obstacles.add(o);
             timeToSpawn = System.currentTimeMillis() + 2000;
         }

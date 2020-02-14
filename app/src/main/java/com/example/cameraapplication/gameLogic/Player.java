@@ -17,7 +17,7 @@ public class Player {
     private Rect rect;
     private Paint paint;
 
-    private static final int MoveSpeed = 10;
+    private static final int MoveSpeed = 20;
 
     Player (int x, int y, int size, int direction) {
         this.x = x;

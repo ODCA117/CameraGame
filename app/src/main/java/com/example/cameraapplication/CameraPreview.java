@@ -34,9 +34,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private PropertyChangeSupport change;
     private int position;
     private Random random;
+    private ProcessingObject processingObject;
 
     public static final int WIDTH = 640;
-    public static final int HEIGT = 480;
+    public static final int HEIGHT = 480;
 
     public CameraPreview(Context context, Camera camera, ImageView mCameraPreview, LinearLayout layout, TextView data1) {
         super(context);
@@ -49,7 +50,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         //Make sure that the preview size actually exists, and set it to our values
         for (Camera.Size previewSize: mCamera.getParameters().getSupportedPreviewSizes())
         {
-            if(previewSize.width == WIDTH && previewSize.height == HEIGT) {
+            if(previewSize.width == WIDTH && previewSize.height == HEIGHT) {
                 params.setPreviewSize(previewSize.width, previewSize.height);
                 break;
             }
@@ -107,6 +108,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e){
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
+        processingObject = new ProcessingObject(WIDTH, HEIGHT);
     }
     /*This method is overridden from the camera class to do stuff on every frame that is taken
     * from the camera, in the form of the byte[] bytes array.
@@ -127,10 +129,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             * Here we rotate the byte array (because of some wierd feature in my phone at least)
             * if your picture is horizontal, delete the rotation of the byte array.
             * */
-            bytes = rotateYUV420Degree90(bytes, WIDTH, HEIGT);
+            bytes = rotateYUV420Degree90(bytes, WIDTH, HEIGHT);
 
             if (mBitmap == null) {
-                mBitmap = Bitmap.createBitmap(HEIGT, WIDTH,
+                mBitmap = Bitmap.createBitmap(HEIGHT, WIDTH,
                         Bitmap.Config.ARGB_8888);
                 myCameraPreview.setImageBitmap(mBitmap);
             }
@@ -157,14 +159,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             byte[] data = datas[0];
             // I use the tempWidth and tempHeight because of the rotation of the image, if your
             // picture is horizontal, use width and height instead.
-            int tempWidth = HEIGT;
+            int tempWidth = HEIGHT;
             int tempHeight = WIDTH;
             // Here we decode the image to a RGB array.
             pixels = decodeYUV420SP(data, tempWidth, tempHeight);
             /*TODO here you're going to change pixel colors.*/
 
-            Log.d(TAG, "size of pizels array: " + pixels.length);
+//            int r,g,b;
+//            for (int i = 0; i < pixels.length; i++) {
+//                r = (pixels[i] >> 16) & 0x00;
+//                g = (pixels[i] >> 8) & 0xff;
+//                b = (pixels[i]) & 0xff;
+//                pixels[i] = 0xff000000 | (r << 16) | (g << 8) | b;
+//            }
 
+            processingObject.ProcessImage(pixels);
 
             position = random.nextInt(WIDTH) + 20;
             
@@ -177,7 +186,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         @Override
         protected void onPostExecute(Boolean result){
             myCameraPreview.invalidate();
-            mBitmap.setPixels(pixels, 0, HEIGT,0, 0, HEIGT, WIDTH);
+            mBitmap.setPixels(pixels, 0, HEIGHT,0, 0, HEIGHT, WIDTH);
             myCameraPreview.setImageBitmap(mBitmap);
 
             change.firePropertyChange("position", null, position);
@@ -222,6 +231,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    //May not be used
     /*Decoding and rotating methods from github
     * This method rotates the NV21 image (standard image that comes from the preview)
     * since this is a byte array, it must be switched correctly to match the pixels*/

@@ -14,7 +14,7 @@ public class DisplayThread extends Thread {
     private Context context;
     volatile private boolean running;
     private GameEngine gameEngine;
-    private Paint backgroundPaint;
+    //private Paint backgroundPaint;
 
 
     private final long DELAY = 4;
@@ -49,6 +49,11 @@ public class DisplayThread extends Thread {
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
                 //TODO: Log
+            }
+            try {
+                this.sleep(35);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

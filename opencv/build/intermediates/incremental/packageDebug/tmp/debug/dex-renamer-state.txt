@@ -1,0 +1,4 @@
+#Tue Feb 11 09:04:58 CET 2020
+base.0=/home/olle/git/CameraApplication/opencv/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
