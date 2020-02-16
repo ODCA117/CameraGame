@@ -74,7 +74,7 @@ try
         title('Original video', 'FontSize', fontSize);
 		drawnow; % Force it to refresh the window.	
 	
-		% Now let's do the differencing
+		% Now lets do the differencing
 		alpha = 0.7;
         
 		if frame == 1

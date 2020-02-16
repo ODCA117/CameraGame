@@ -16,6 +16,7 @@ import com.example.cameraapplication.gameLogic.GameEngine;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
 public class VideoActivity extends AppCompatActivity {
