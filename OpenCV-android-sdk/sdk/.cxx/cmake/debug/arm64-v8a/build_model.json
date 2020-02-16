@@ -1,0 +1,73 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "D:\\Dev\\git\\CameraGame\\CameraGame",
+      "sdkFolder": "C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "ideBuildTargetAbi": "arm64-v8a,armeabi-v7a,armeabi",
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\build\\intermediates",
+      "gradleModulePathName": ":opencv",
+      "moduleRootFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk",
+      "makeFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\libcxx_helper\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "D:\\Dev\\git\\CameraGame\\CameraGame\\.cxx",
+      "cxxFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx",
+      "ndkFolder": "C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669",
+      "ndkVersion": "21.0.6113669",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DANDROID_STL\u003dc++_shared"
+    ],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "soFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\build\\intermediates\\cmake\\debug\\lib",
+    "objFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\build\\intermediates\\cmake\\debug\\obj",
+    "jsonFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug",
+    "gradleBuildOutputFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARM64_V8A",
+      "ARMEABI_V7A"
+    ],
+    "buildTargetSet": [
+      "opencv_jni_shared"
+    ]
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 21,
+  "cxxBuildFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a",
+  "jsonFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\android_gradle_build.json",
+  "gradleBuildOutputFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a",
+  "objFolder": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a",
+  "buildCommandFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\build_command.txt",
+  "buildOutputFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\build_output.txt",
+  "modelOutputFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\CMakeLists.txt",
+    "toolchainWrapperFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\build_generation_state.json",
+    "cacheKeyFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_key.json",
+    "compilerCacheUseFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_use.json",
+    "compilerCacheWriteFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cxx\\debug\\arm64-v8a\\compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\json_generation_record.json",
+  "compileCommandsJsonFile": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\arm64-v8a\\compile_commands.json"
+}

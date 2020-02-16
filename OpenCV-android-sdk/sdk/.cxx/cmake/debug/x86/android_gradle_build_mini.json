@@ -1,0 +1,16 @@
+{
+  "buildFiles": [
+    "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\libcxx_helper\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "\"C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe\" --build D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\x86 --target clean"
+  ],
+  "libraries": {
+    "opencv_jni_shared-Debug-x86": {
+      "artifactName": "opencv_jni_shared",
+      "buildCommand": "\"C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe\" --build D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\x86 --target opencv_jni_shared",
+      "abi": "x86",
+      "output": "D:\\Dev\\git\\CameraGame\\OpenCV-android-sdk\\sdk\\.cxx\\cmake\\debug\\x86\\libopencv_jni_shared.a"
+    }
+  }
+}
