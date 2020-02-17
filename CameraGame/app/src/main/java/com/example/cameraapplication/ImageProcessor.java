@@ -1,7 +1,5 @@
 package com.example.cameraapplication;
 
-import android.util.Log;
-
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -15,6 +13,7 @@ import java.util.List;
 public class ImageProcessor {
 
     private static final String TAG = "Video::ImageProcessor";
+    private static final int gauss = 13; //Must be an odd numver!!
 
     private static double ALPHA = 0.7;
     private static int MIN_THRESH = 5;
@@ -61,20 +60,15 @@ public class ImageProcessor {
         if(backgroundGray == null) {
             //set first frame, apply gaussian filter
             backgroundGray = currentGray;
-            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(11,11), 0);
+            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(gauss,gauss), 0);
 
         } else {
             //calc next frame, convert to gray, apply gaussfilt
-            Core.multiply(currentGray, new Scalar(0.5), tmp);
+            Core.multiply(currentGray, new Scalar(ALPHA), tmp);
             Core.multiply(backgroundGray, new Scalar(0.5), backgroundGray);
-
-            if (tmp.size().height != backgroundGray.size().height)
-                Log.e(TAG, "height: " + tmp.size().height + ", " + backgroundGray.size().height);
-            if (tmp.size().width != backgroundGray.size().width)
-                Log.e(TAG, "width: " + tmp.size().width + ", " + backgroundGray.size().width);
             Core.add(tmp, backgroundGray, backgroundGray);
 
-            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(11,11), 0);
+            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(gauss,gauss), 0);
         }
     }
 
@@ -82,7 +76,7 @@ public class ImageProcessor {
     // convert to gray and convert to binary
     private void getBinaryImage() {
         //apply gaussianfilter
-        Imgproc.GaussianBlur(currentGray, currentGray, new Size(11,11), 0);
+        Imgproc.GaussianBlur(currentGray, currentGray, new Size(gauss,gauss), 0);
 
         // subtract backgroundGray
         Core.subtract(currentGray, backgroundGray, currentGray);
@@ -107,7 +101,4 @@ public class ImageProcessor {
     private void detectDirection() {
 
     }
-
-
-
 }

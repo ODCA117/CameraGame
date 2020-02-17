@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,6 +72,8 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
 
 /* ------------------ stuff that is done in the old way ---------------
@@ -123,26 +126,12 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
-        /*
-        gameEngine = null;
+        gameView.stop();
         gameView = null;
+        gameEngine = null;
+        imageProcessor = null;
 
-        if (mCamera != null) {
-            // Call stopPreview() to stop updating the preview surface.
-            mCamera.stopPreview();
-
-            // Important: Call release() to release the camera for use by other
-            // applications. Applications should release the camera immediately
-            // during onPause() and re-open() it during onResume()).
-            mCamera.release();
-
-            mCamera = null;
-        }
-
-        mPreview = null;
-        */
-
-
+        Log.e(TAG, "onPause");
     }
 
     // This is connected to the lifecycle of the activity
@@ -156,22 +145,29 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
-        /*
+
         gameEngine = new GameEngine();
         gameView = findViewById(R.id.gameView);
         gameView.init(gameEngine);
 
-        mCamera = getCameraInstance();
-        mPreview = new CameraPreview(this, mCamera, convertedImageView,layoutForImage, data1);
-        preview.addView(mPreview);
-        preview.setVisibility(View.INVISIBLE);
-        */
+        imageProcessor = new ImageProcessor(WIDTH,HEIGHT);
+
+        mOpenCvCameraView = findViewById(R.id.camera_surface_View);
+        Log.e(TAG, "onResume");
+
     }
 
     public void onDestroy() {
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+
+
+        gameView.stop();
+        gameView = null;
+        gameEngine = null;
+        imageProcessor = null;
+        Log.e(TAG, "onDestroy");
     }
 
     //needed to be able to preview
@@ -215,9 +211,6 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-
-        Log.e(TAG, "called from the frame");
         mRgba = inputFrame.rgba();
         // Rotate mRgba 90 degrees
         Core.transpose(mRgba, mRgbaT);

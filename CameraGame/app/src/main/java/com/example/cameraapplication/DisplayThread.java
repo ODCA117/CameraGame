@@ -51,7 +51,7 @@ public class DisplayThread extends Thread {
                 //TODO: Log
             }
             try {
-                this.sleep(35);
+                this.sleep(20);
             } catch (Exception e) {
                 e.printStackTrace();
             }

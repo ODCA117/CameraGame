@@ -32,6 +32,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+    public void stop() {
+        gameEngine = null;
+        displayThread.stopRunning();
+        displayThread = null;
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
