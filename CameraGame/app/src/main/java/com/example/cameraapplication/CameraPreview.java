@@ -37,7 +37,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private PropertyChangeSupport change;
     private int position;
     private Random random;
-    private ProcessingObject processingObject;
+    private ImageProcessor processingObject;
 
     public static final int WIDTH = 640;
     public static final int HEIGHT = 480;
@@ -111,7 +111,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (Exception e){
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
-        processingObject = new ProcessingObject(WIDTH, HEIGHT);
+        processingObject = new ImageProcessor(WIDTH, HEIGHT);
     }
     /*This method is overridden from the camera class to do stuff on every frame that is taken
     * from the camera, in the form of the byte[] bytes array.
@@ -184,7 +184,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 //                pixels[i] = 0xff000000 | (r << 16) | (g << 8) | b;
 //            }
 
-            processingObject.ProcessImage(pixels);
+            //processingObject.ProcessImage(pixels);
 
             position = random.nextInt(WIDTH) + 20;
             

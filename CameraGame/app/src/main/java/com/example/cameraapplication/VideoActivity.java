@@ -20,7 +20,10 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +31,8 @@ import java.util.List;
 public class VideoActivity extends CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "Video::Activity";
+    private static final int WIDTH = 480;
+    private static final int HEIGHT = 620;
 
 
     Camera mCamera;
@@ -38,11 +43,13 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     GameView gameView;
     TextView data1;
     GameEngine gameEngine;
+    ImageProcessor imageProcessor;
 
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private Mat rgbMat;
-    private Mat greyMat;
+    private Mat mRgba;
+    private Mat mRgbaF;
+    private Mat mRgbaT;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -90,12 +97,13 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
         layoutForImage = findViewById(R.id.camera_layout);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_surface_View);
-        mOpenCvCameraView.setMaxFrameSize(640, 480);
+        mOpenCvCameraView.setMaxFrameSize(HEIGHT, WIDTH);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         data1 = findViewById(R.id.camera_data1);
 
+        imageProcessor = new ImageProcessor(WIDTH, HEIGHT);
 
         //initialize gameView and Game Engine initialization
         gameView = findViewById(R.id.gameView);
@@ -185,12 +193,7 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 //    }
 
     public void onClick(View view) {
-
         restartGame();
-        if (!gameEngine.running()) {
-
-            //mPreview.setVisibility(View.VISIBLE);
-        }
     }
 
     public void restartGame() {
@@ -199,23 +202,30 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-
-
-
+        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgbaF = new Mat(height, width, CvType.CV_8UC4);
+        mRgbaT = new Mat(width, width, CvType.CV_8UC4);
+        imageProcessor.initProcessor();
     }
 
     @Override
     public void onCameraViewStopped() {
-
+        mRgba.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        rgbMat = inputFrame.rgba();
-        greyMat = inputFrame.gray();
+
 
         Log.e(TAG, "called from the frame");
-        return rgbMat;
+        mRgba = inputFrame.rgba();
+        // Rotate mRgba 90 degrees
+        Core.transpose(mRgba, mRgbaT);
+        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
+        Core.flip(mRgbaF, mRgba, 1 );
+        mRgba = imageProcessor.ProcessImage(mRgba);
+
+        return mRgba; // This function must return
     }
 }
 
