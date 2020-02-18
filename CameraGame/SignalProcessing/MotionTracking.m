@@ -188,6 +188,58 @@ try
         hold on;
 %         a = linspace(1,abs(numberOfFrames/2));
         plot(movement,'k-', 'LineWidth',2);
+
+
+		%Puts 5 values (the current and the last 4) and puts a low pass
+        %filter on (the current is multiplied with 10, the previous one is
+        %multiplied with 8, the one before that with 6 and so on)
+        if frame == 1 || frame == (1+step) || frame == (1+2*step) ||frame == (1+3*step) || frame == (1+4*step)
+         % if frame > 1+4*step
+            for i=1:5
+                boxMoveList(i) = 1;
+            end
+            
+         else
+              for i = 0 : 4
+                boxMoveList(i+1) = movement(frame-step*i)*(10-i*2);
+              end
+        end
+        
+            %The mean of all the values (a number between -25 and 25 rn)
+            %meanBoxMoveList = sum(boxMoveList)/30;
+            boxMove=0;
+            for i=1:5
+                boxMoveSum=boxMoveList(i)+boxMove;
+            end
+            meanBoxMoveList=boxMoveSum/30;
+            
+            %Some sort of check that the position of the box is within 20
+            %and 940 and an if condition
+            
+            if (meanBoxMoveList > 0.1)    %threshold of 10 - needs adjustement 
+                boxmove(frame)=20;             %nr of pixels that the box should move to the left
+            elseif (meanBoxMoveList < -0.1)
+                boxmove(frame)=-20;              %nr of pixels that the box should move to the right
+            else 
+                boxmove(frame)=0;
+            end
+           
+           %Change the position of the box (within the boundaries 20 and
+           %940)
+           %if((box(frame)+boxmove(frame)>=20) && (box(frame)+boxmove(frame)<=940))
+            if(frame==1)
+                  box(frame)=box(frame);
+            else
+                   box(frame)=box(frame-step)+boxmove(frame);
+             end
+           %end
+            
+         % plot the movement of the "box"
+        %box(frame) = box;
+        convPlot = subplot(2, 3, 4);
+        hold on;
+        plot(box,'k-', 'LineWidth',2);
+        end
         
     end
     

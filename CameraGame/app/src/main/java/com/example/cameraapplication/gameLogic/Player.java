@@ -17,7 +17,7 @@ public class Player {
     private Rect rect;
     private Paint paint;
 
-    private static final int MoveSpeed = 20;
+    private static final int MoveSpeed = 5;
 
     Player (int x, int y, int size, int direction) {
         this.x = x;
@@ -49,7 +49,7 @@ public class Player {
     }
 
     void setGoalPosition(int x) {
-        goalX.set(x);
+        goalX.set(goalX.get() + x);
         Log.d(TAG, "player goal position: " + x);
         Log.d(TAG, "player current position: " + this.x);
 

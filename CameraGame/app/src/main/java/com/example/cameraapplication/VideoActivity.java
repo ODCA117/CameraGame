@@ -110,7 +110,7 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
         //initialize gameView and Game Engine initialization
         gameView = findViewById(R.id.gameView);
-        gameEngine = new GameEngine();
+        gameEngine = new GameEngine(imageProcessor);
         gameView.init(gameEngine);
 
         //This is done to not show the real preview frame, and only our ImageView.
@@ -146,11 +146,12 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
 
-        gameEngine = new GameEngine();
-        gameView = findViewById(R.id.gameView);
-        gameView.init(gameEngine);
+
 
         imageProcessor = new ImageProcessor(WIDTH,HEIGHT);
+        gameEngine = new GameEngine(imageProcessor);
+        gameView = findViewById(R.id.gameView);
+        gameView.init(gameEngine);
 
         mOpenCvCameraView = findViewById(R.id.camera_surface_View);
         Log.e(TAG, "onResume");
@@ -162,9 +163,10 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
 
-
-        gameView.stop();
-        gameView = null;
+        if (gameView != null) {
+            gameView.stop();
+            gameView = null;
+        }
         gameEngine = null;
         imageProcessor = null;
         Log.e(TAG, "onDestroy");
@@ -175,18 +177,6 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     protected List<? extends CameraBridgeViewBase> getCameraViewList() {
         return Collections.singletonList(mOpenCvCameraView);
     }
-
-//    /** A safe way to get an instance of the Camera object. */
-//    public static Camera getCameraInstance(){
-//        Camera c = null;
-//        try {
-//            c = Camera.open(); // attempt to get a Camera instance
-//        }
-//        catch (Exception e){
-//            // Camera is not available (in use or does not exist)
-//        }
-//        return c; // returns null if camera is unavailable
-//    }
 
     public void onClick(View view) {
         restartGame();

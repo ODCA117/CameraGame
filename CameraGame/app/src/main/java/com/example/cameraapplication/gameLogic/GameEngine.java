@@ -6,6 +6,7 @@ import android.nfc.Tag;
 import android.util.Log;
 
 import com.example.cameraapplication.CameraPreview;
+import com.example.cameraapplication.ImageProcessor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -26,13 +27,11 @@ public class GameEngine implements PropertyChangeListener {
     private long timeToSpawn;
     private Random random;
 
-    private int goalPosition;
-    private int counter;
+    //private int goalPosition;
 
-    public GameEngine() {
-        //cameraPreview.addPropertyChangeListener(this);
-        goalPosition = 500;
-        counter = 0;
+    public GameEngine(ImageProcessor processor) {
+        processor.addPropertyChangeListener(this);
+        //player.setGoalPosition(500);
         gameOn = false;
     }
 
@@ -67,6 +66,7 @@ public class GameEngine implements PropertyChangeListener {
 
     public void restart() {
         player = new Player(20, height - 120, 100, 1);
+        player.setGoalPosition(500);
         obstacles = new ArrayList<>();
         random = new Random(0);
         timeToSpawn = System.currentTimeMillis() + 2000;
@@ -121,9 +121,16 @@ public class GameEngine implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if (!gameOn)
             return;
+        int newDelta = (int) evt.getNewValue();
+        int oldDelta = (int) evt.getOldValue();
+        if(newDelta > oldDelta) {
+            player.setGoalPosition(newDelta);
+        } else {
+            player.setGoalPosition(newDelta*(-1));
+        }
 
-        //Log.d(TAG, "player goal position: " + (int) evt.getNewValue());
+        Log.e(TAG, "player goal position: " + newDelta);
 
-        player.setGoalPosition((int)evt.getNewValue());
+
     }
 }
