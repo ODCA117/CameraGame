@@ -14,12 +14,13 @@ public class Player {
     private int x,y, size;
     private AtomicInteger goalX;
     private int speed, direction;
+    private int leftBoarder, rightBoarder;
     private Rect rect;
     private Paint paint;
 
     private static final int MoveSpeed = 5;
 
-    Player (int x, int y, int size, int direction) {
+    Player (int x, int y, int size, int direction, int leftBoarder, int rightBoarder) {
         this.x = x;
         this.y = y;
         this.size = size;
@@ -38,7 +39,7 @@ public class Player {
 
         Log.d(TAG, "abs(goalX - x) = " + Math.abs(goalX.get() - x));
 
-        if (Math.abs(goalX.get() - x) < 10) {
+        if (Math.abs(goalX.get() - x) < 10 || x <= leftBoarder || x >= rightBoarder) {
             speed = 0;
         } else {
             speed = MoveSpeed;
@@ -50,25 +51,22 @@ public class Player {
 
     void setGoalPosition(int x) {
         goalX.set(goalX.get() + x);
-        Log.d(TAG, "player goal position: " + x);
-        Log.d(TAG, "player current position: " + this.x);
+        if (goalX.get() + x < leftBoarder)
+            goalX.set(leftBoarder);
 
-        if(this.x < goalX.get()) {
+        else if (goalX.get() + x > rightBoarder)
+            goalX.set(rightBoarder);
+        Log.e(TAG, "player goal position: " + goalX.get());
+        Log.e(TAG, "player current position: " + this.x);
+
+        if (x > 0)
             direction = 1;
-        } else if (this.x > goalX.get())
+        else if (x < 0)
             direction = -1;
     }
 
     void drawPlayer(Canvas canvas) {
         canvas.drawRect(rect, paint);
-    }
-
-    void changeDirection(int dir) {
-        direction = dir;
-    }
-
-    int getX() {
-       return x;
     }
 
     Rect getBounds() {

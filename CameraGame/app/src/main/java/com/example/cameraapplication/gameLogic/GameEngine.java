@@ -2,15 +2,12 @@ package com.example.cameraapplication.gameLogic;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.nfc.Tag;
 import android.util.Log;
 
-import com.example.cameraapplication.CameraPreview;
 import com.example.cameraapplication.ImageProcessor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -65,7 +62,7 @@ public class GameEngine implements PropertyChangeListener {
     }
 
     public void restart() {
-        player = new Player(20, height - 120, 100, 1);
+        player = new Player(20, height - 120, 100, 1, 20, width - 120);
         player.setGoalPosition(500);
         obstacles = new ArrayList<>();
         random = new Random(0);
@@ -122,14 +119,12 @@ public class GameEngine implements PropertyChangeListener {
         if (!gameOn)
             return;
         int newDelta = (int) evt.getNewValue();
-        int oldDelta = (int) evt.getOldValue();
-        if(newDelta > oldDelta) {
-            player.setGoalPosition(newDelta);
-        } else {
-            player.setGoalPosition(newDelta*(-1));
-        }
+        if (newDelta == 0)
+            return;
 
-        Log.e(TAG, "player goal position: " + newDelta);
+        player.setGoalPosition(newDelta);
+
+        Log.e(TAG, "player Move: " + newDelta);
 
 
     }

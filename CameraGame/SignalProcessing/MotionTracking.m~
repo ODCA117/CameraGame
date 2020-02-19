@@ -173,7 +173,7 @@ try
 %         imshow(binaryImageRef);
         
         
-        % What does it do??? one frame delay of detecting movement
+        % What does it do???
         if frame == 1 || frame == (1+step) || frame == (1+2*step)
             movement(frame) = temp_movement(frame);
         else
@@ -200,6 +200,7 @@ try
             for i=1:5
                 boxMoveList(i) = 1;
             end
+            
          else
               for i = 0 : 4
                 boxMoveList(i+1) = movement(frame-step*i)*(10-i*2);
@@ -208,9 +209,9 @@ try
         
             %The mean of all the values (a number between -25 and 25 rn)
             %meanBoxMoveList = sum(boxMoveList)/30;
-            boxMoveSum=0;
+            boxMove=0;
             for i=1:5
-                boxMoveSum=boxMoveList(i)+boxMoveSum;
+                boxMoveSum=boxMoveList(i)+boxMove;
             end
             meanBoxMoveList=boxMoveSum/30;
             
