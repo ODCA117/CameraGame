@@ -49,6 +49,7 @@ public class Player {
 
     }
 
+    // Set the position we want to move to
     void setGoalPosition(int x) {
         goalX.set(goalX.get() + x);
         if (goalX.get() + x < leftBoarder)
@@ -64,6 +65,7 @@ public class Player {
         else if (x < 0)
             direction = -1;
     }
+
 
     void drawPlayer(Canvas canvas) {
         canvas.drawRect(rect, paint);

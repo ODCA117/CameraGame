@@ -12,6 +12,7 @@ import com.example.cameraapplication.gameLogic.GameEngine;
 
 import static android.content.ContentValues.TAG;
 
+//Class representing the surface that the game is displayed on
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private DisplayThread displayThread;
@@ -25,6 +26,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         holder.addCallback(this);
     }
 
+    // Set the game engine and create the display Thread that will draw everything
     public void init(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         displayThread = new DisplayThread(holder, getContext(), gameEngine);
@@ -41,22 +43,23 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
+        // start the thread if it is not allready active
         if(!displayThread.isRunning()) {
             displayThread.start();
         } else {
             displayThread.start();
         }
 
+        // initialize the game engine
         gameEngine.initGame(getHeight(), getWidth());
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.d(TAG, "Surfaced Changed:");
-
-
     }
 
+    // Called when surface is destroyed, stop the display thread
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         displayThread.stopRunning();

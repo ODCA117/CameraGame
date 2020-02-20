@@ -49,6 +49,9 @@ public class ImageProcessor {
 
     private PropertyChangeSupport change;
 
+    // Constructor:
+    // set height and width of the frames
+    // initialize the lists that stores previous values and add 0 as element to them
     ImageProcessor(int width, int height) {
         this.width = width;
         this.height = height;
@@ -63,25 +66,30 @@ public class ImageProcessor {
         boxMovement = new LinkedList<>();
         boxMovement.add(0);
         boxMovement.add(0);
+
+        // Used to communicate with game engine
         change = new PropertyChangeSupport(this);
     }
 
+    //create matrices
     public void initProcessor() {
         tmp = new Mat(height, width, CvType.CV_8UC1);
         currentGray = new Mat(height, width, CvType.CV_8UC1);
         binary = new Mat(height, width, CvType.CV_8UC1);
     }
 
+    // add listener
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         change.addPropertyChangeListener(listener);
     }
 
+    // public method that does all processing
     public Mat ProcessImage(Mat newFrame) {
         current = newFrame;
 
-            tmp = new Mat((int)current.size().height, (int)current.size().width, CvType.CV_8UC1);
+        tmp = new Mat((int)current.size().height, (int)current.size().width, CvType.CV_8UC1);
 
-            currentGray = new Mat(height, width, CvType.CV_8UC1);
+        currentGray = new Mat(height, width, CvType.CV_8UC1);
         Imgproc.cvtColor(current, currentGray, Imgproc.COLOR_RGBA2GRAY);
         getBackground();
         getBinaryImage();
@@ -95,21 +103,24 @@ public class ImageProcessor {
         return binary;
     }
 
+    //Get the background
     private void getBackground() {
-
+        //if no background exists before, this frame is the background
         if(backgroundGray == null) {
-            //set first frame, apply gaussian filter
             backgroundGray = currentGray;
-            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(gauss,gauss), 0);
 
-        } else {
-            //calc next frame, convert to gray, apply gaussfilt
+        }
+        // Else combine current frame with previous background
+        else {
             Core.multiply(currentGray, new Scalar(ALPHA), tmp);
-            Core.multiply(backgroundGray, new Scalar(0.5), backgroundGray);
+            Core.multiply(backgroundGray, new Scalar(1-ALPHA), backgroundGray);
             Core.add(tmp, backgroundGray, backgroundGray);
 
-            Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(gauss,gauss), 0);
         }
+
+        //filter the current background with gauss
+        // NOTE: we store the filtered background, this may be wrong!!!!
+        Imgproc.GaussianBlur(backgroundGray, backgroundGray, new Size(gauss,gauss), 0);
     }
 
     // this - backgroundGray
@@ -118,7 +129,7 @@ public class ImageProcessor {
         //apply gaussianfilter
         Imgproc.GaussianBlur(currentGray, currentGray, new Size(gauss,gauss), 0);
 
-        // subtract backgroundGray
+        // subtract backgroundGray from current image and store in currentGray
         Core.subtract(currentGray, backgroundGray, currentGray);
 
         //get Binary image using Otsu
@@ -129,20 +140,26 @@ public class ImageProcessor {
 
     //process the binary image to reduce noice and make the person stand out
     private void postProcessing() {
+        // create the element for erode
         Mat erodeElement = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,
                 new Size(2 * KERNELSIZE_ERODE + 1,2 * KERNELSIZE_ERODE + 1 ),
                 new Point(KERNELSIZE_ERODE, KERNELSIZE_ERODE));
+        // create the element for dialte
         Mat dialElement = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,
                 new Size(2 * KERNELSIZE_DILATE + 1,2 * KERNELSIZE_DILATE + 1 ),
                 new Point(KERNELSIZE_DILATE, KERNELSIZE_DILATE));
+
+        // erode image to remove small noise
         Imgproc.erode(binary, binary, erodeElement);
 
+        // dilate the image DILATETIMES to increase what we see
         for (int i = 0; i < DILATETIMES; i++)
             Imgproc.dilate(binary, binary, dialElement);
     }
 
     //store value for future usage
     private void calculateMovement() {
+        // calculate the centroid of binary image
         Moments moments = Imgproc.moments(binary, true);
         int centroid = (int)(moments.m10/moments.m00);
 
@@ -150,11 +167,10 @@ public class ImageProcessor {
         Log.d(TAG, "previous Position: " + centroidPositions.getFirst());
 
 
+        // Find if the new centroid is close to the last centroid
         boolean noise = false;
-
         Iterator<Integer> itr = centroidPositions.iterator();
         int delta = centroid - itr.next();
-
         if (delta < MIN_THRESH || delta > MAX_THRESH) {
             noise = true;
         }
@@ -170,10 +186,14 @@ public class ImageProcessor {
             loops++;
         }
 
+        //Add the current centroid to storage list and remove the last if the list is "full"
+        // NOTE: May be wrong as this is a strange value??
         centroidPositions.addFirst(centroid);
         if (centroidPositions.size() > MAX_STORED_VALUE)
             centroidPositions.removeLast();
 
+        // if noise, then add 0 as movement and remove last value to keep size consistent
+        // NOTE: we have to decide a size to use here
         if(noise) {
             //set tempForegroundMovement to 0 and movement to 0;
             //remove the last element in list as it is replaced
@@ -190,13 +210,14 @@ public class ImageProcessor {
         tempForegroundMovement.addFirst(delta);
         tempForegroundMovement.removeLast();
 
-        //check if the previous tempMovements is 0 to remove impulse noise
+        //check if the previous tempMovements is 0, if so remove noise, Will create one frame delay
         noise = false;
         for(int m : tempForegroundMovement) {
             if (m == 0) {
                 noise = true;
             }
         }
+
         if (noise) {
             //impules detected, add 0 to movement,
             //remove the last element in Movement and return
@@ -209,8 +230,6 @@ public class ImageProcessor {
         //the delta is valid as movement and shall be stored
         foregroundMovement.addFirst(delta);
         foregroundMovement.removeLast();
-        return;
-
     }
 
     // based on current centroid and previous centroids
@@ -224,17 +243,19 @@ public class ImageProcessor {
 
         double meanBoxMove = sum / TOTAL_BOXES;
 
+        // if the box moved in positive direction, move it 20 pixels in positive directions
         if(meanBoxMove > 0.1) {
             boxMovement.addFirst(20);
         }
+        // if the box moved in negative direction, move it 20 pixels in negative directions
         else if (meanBoxMove < -0.1) {
             boxMovement.addFirst(-20);
 
 
         }
+        // else don't move at all
         else {
             boxMovement.addFirst(0);
-
         }
         boxMovement.removeLast();
     }

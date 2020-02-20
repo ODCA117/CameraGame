@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+// =================== NOT USED AT THE MOMENT ================================= //
 public class MainActivity extends AppCompatActivity {
 
     @Override

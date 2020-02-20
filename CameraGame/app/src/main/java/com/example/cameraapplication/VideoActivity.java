@@ -74,51 +74,26 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
         setContentView(R.layout.activity_camera);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
-
-/* ------------------ stuff that is done in the old way ---------------
-        // Make a image to put our converted preview frame.
-        convertedImageView = new ImageView(this);
-
-        // Get the mobiles camera and set it to our camera object.
-        mCamera = getCameraInstance();
-        // Create a layout to put our image.
-
-
-
-        //initialize camera Data textview
-
-
-        // Creates our own camera preview object to  be able to make changes to the previews.
-        mPreview = new CameraPreview(this, mCamera, convertedImageView, layoutForImage, data1);
-        mPreview.setVisibility(View.INVISIBLE);
-
-        // Add our camerapreview to this activitys layout.
-        preview = (FrameLayout) findViewById(R.id.frame_view);
-        preview.addView(mPreview, 0);
-        */
-
+        //Find the camera view from the layout and set the preview size.
         layoutForImage = findViewById(R.id.camera_layout);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_surface_View);
         mOpenCvCameraView.setMaxFrameSize(HEIGHT, WIDTH);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
+        //Add this activity as a listener to get frames from the camera preview
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        data1 = findViewById(R.id.camera_data1);
-
+        //Create an Image processor that does all processing of the image
         imageProcessor = new ImageProcessor(WIDTH, HEIGHT);
 
-        //initialize gameView and Game Engine initialization
+        //initialize gameView and Game Engine
         gameView = findViewById(R.id.gameView);
         gameEngine = new GameEngine(imageProcessor);
         gameView.init(gameEngine);
-
-        //This is done to not show the real preview frame, and only our ImageView.
-        //preview.setVisibility(View.INVISIBLE);
     }
 
 
     // This is connected to the lifecycle of the activity
+    // Release everything when the app is paused
     @Override
     protected void onPause() {
         super.onPause();
@@ -135,6 +110,7 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     }
 
     // This is connected to the lifecycle of the activity
+    // Create everything when the app is resumed after a pause
     @Override
     protected void onResume() {
         super.onResume();
@@ -146,8 +122,6 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
 
-
-
         imageProcessor = new ImageProcessor(WIDTH,HEIGHT);
         gameEngine = new GameEngine(imageProcessor);
         gameView = findViewById(R.id.gameView);
@@ -158,6 +132,7 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
     }
 
+    // Release and stop everything when app is shut down
     public void onDestroy() {
         super.onDestroy();
         if (mOpenCvCameraView != null)
@@ -172,20 +147,24 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
         Log.e(TAG, "onDestroy");
     }
 
-    //needed to be able to preview
+    //needed to be able to get preview frames
     @Override
     protected List<? extends CameraBridgeViewBase> getCameraViewList() {
         return Collections.singletonList(mOpenCvCameraView);
     }
 
+    // Method for start game button which will reset the game
     public void onClick(View view) {
         restartGame();
     }
 
+    // resets the game
     public void restartGame() {
         gameEngine.restart();
     }
 
+    // When the preview is started we create some matrices, These must be created after openCV is initilized
+    // which is why this is done here
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
@@ -199,16 +178,21 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
         mRgba.release();
     }
 
+    // Method called every time a new frame arrives
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        //get the frame in color
         mRgba = inputFrame.rgba();
         // Rotate mRgba 90 degrees
         Core.transpose(mRgba, mRgbaT);
         Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
         Core.flip(mRgbaF, mRgba, 1 );
+
+        //process the image
         mRgba = imageProcessor.ProcessImage(mRgba);
 
-        return mRgba; // This function must return
+
+        return mRgba; // return the matrix we want to display
     }
 }
 

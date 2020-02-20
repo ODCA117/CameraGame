@@ -23,6 +23,7 @@ import java.util.Random;
 import static android.content.ContentValues.TAG;
 
 /** A basic Camera preview class */
+// =================== NOT USED AT THE MOMENT ================================= //
 @SuppressWarnings("deprecation")
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
     private SurfaceHolder mHolder;
