@@ -97,7 +97,6 @@ public class ImageProcessor {
         calculateMovement();
         calculatePosition();
 
-
         change.firePropertyChange("position", boxMovement.get(1), boxMovement.getFirst());
 
         return binary;
@@ -115,7 +114,6 @@ public class ImageProcessor {
             Core.multiply(currentGray, new Scalar(ALPHA), tmp);
             Core.multiply(backgroundGray, new Scalar(1-ALPHA), backgroundGray);
             Core.add(tmp, backgroundGray, backgroundGray);
-
         }
 
         //filter the current background with gauss
@@ -137,7 +135,6 @@ public class ImageProcessor {
     }
 
 
-
     //process the binary image to reduce noice and make the person stand out
     private void postProcessing() {
         // create the element for erode
@@ -157,6 +154,7 @@ public class ImageProcessor {
             Imgproc.dilate(binary, binary, dialElement);
     }
 
+    //TODO: This must be redone to handle when the centroid is strange
     //store value for future usage
     private void calculateMovement() {
         // calculate the centroid of binary image
@@ -250,13 +248,13 @@ public class ImageProcessor {
         // if the box moved in negative direction, move it 20 pixels in negative directions
         else if (meanBoxMove < -0.1) {
             boxMovement.addFirst(-20);
-
-
         }
+
         // else don't move at all
         else {
             boxMovement.addFirst(0);
         }
+
         boxMovement.removeLast();
     }
 }

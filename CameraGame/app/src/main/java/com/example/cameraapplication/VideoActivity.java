@@ -47,7 +47,7 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     ImageProcessor imageProcessor;
 
 
-    private CameraBridgeViewBase mOpenCvCameraView;
+    private MyJavaCameraView mOpenCvCameraView;
     private Mat mRgba;
     private Mat mRgbaF;
     private Mat mRgbaT;
@@ -76,8 +76,8 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
         //Find the camera view from the layout and set the preview size.
         layoutForImage = findViewById(R.id.camera_layout);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_surface_View);
-        mOpenCvCameraView.setMaxFrameSize(HEIGHT, WIDTH);
+        mOpenCvCameraView = findViewById(R.id.camera_surface_View);
+
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         //Add this activity as a listener to get frames from the camera preview
         mOpenCvCameraView.setCvCameraViewListener(this);

@@ -33,7 +33,7 @@
                 android:text="@string/start_game_button" />
         </LinearLayout>
 
-        <org.opencv.android.JavaCameraView
+        <com.example.cameraapplication.MyJavaCameraView
             android:id="@+id/camera_surface_View"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
