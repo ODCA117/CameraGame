@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static android.content.ContentValues.TAG;
-
 public class GameEngine implements PropertyChangeListener {
 
     private int width;
@@ -23,12 +21,14 @@ public class GameEngine implements PropertyChangeListener {
     private boolean gameOn;
     private long timeToSpawn;
     private Random random;
+    private ImageProcessor processor;
+
+    private static final String TAG = "GameEngine";
 
     //private int goalPosition;
 
     public GameEngine(ImageProcessor processor) {
-        processor.addPropertyChangeListener(this);
-        //player.setGoalPosition(500);
+        this.processor = processor;
         gameOn = false;
     }
 
@@ -68,7 +68,7 @@ public class GameEngine implements PropertyChangeListener {
         // player size 100*100, movement direction = positive,
         // player restricted to move between 20 from left and right boarder
         player = new Player(20, height - 120, 100, 1, 20, width - 120);
-        player.setGoalPosition(500);
+        player.initPlayer(20, 500);
 
         // create a list of obstacles
         obstacles = new ArrayList<>();
@@ -76,6 +76,9 @@ public class GameEngine implements PropertyChangeListener {
 
         //create a spawn rate of 1 obstacle every 2 seconds
         timeToSpawn = System.currentTimeMillis() + 2000;
+
+        //Add this as listener
+        processor.addPropertyChangeListener(this);
 
         // start game
         gameOn = true;
@@ -94,6 +97,7 @@ public class GameEngine implements PropertyChangeListener {
             if(Rect.intersects(playerRect, o.getBounds())) {
                 Log.d(TAG, "Game Over");
                 gameOn = false;
+                processor.removePropertyChangeListener(this);
             }
         }
     }
@@ -130,13 +134,17 @@ public class GameEngine implements PropertyChangeListener {
     // Called from Image processor and will update the position the player should move to
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (!gameOn)
+        Log.e(TAG, "call to property Change");
+        if (!gameOn){
+            Log.e(TAG, "Game off");
             return;
+        }
+        Log.e(TAG, "Game on");
         int newDelta = (int) evt.getNewValue();
         if (newDelta == 0)
             return;
 
-        player.setGoalPosition(newDelta);
+        player.moveGoalPosition(newDelta);
 
         Log.e(TAG, "player Move: " + newDelta);
     }

@@ -25,9 +25,11 @@ public class ImageProcessor {
     private static int KERNELSIZE_ERODE = 5;
     private static int KERNELSIZE_DILATE = 1;
     private static int DILATETIMES = 1;
-    private static int MIN_THRESH = 2;
+    private static int MIN_THRESH = 5;
     private static int MAX_THRESH = 200;
-    private static int MAX_STORED_VALUE = 5;
+    private static int MAX_STORED_BOXES = 2;
+    private static int MAX_STORED_CENTROIDS = 3;
+    private static int MAX_STORED_FOREGROUNDS = 3;
     private static int BOX_MOVE_WEIGTH = 10;
     private static int BOX_MOVE_WEIGTH_REDUCE = 2;
     private static int TOTAL_BOXES = 30;
@@ -42,7 +44,7 @@ public class ImageProcessor {
     private Mat binary;
     private Mat tmp;
 
-    private LinkedList<Integer> centroidPositions;
+    private LinkedList<Integer> centroids;
     private LinkedList<Integer> foregroundMovement;
     private LinkedList<Integer> tempForegroundMovement;
     private LinkedList<Integer> boxMovement;
@@ -55,8 +57,8 @@ public class ImageProcessor {
     ImageProcessor(int width, int height) {
         this.width = width;
         this.height = height;
-        centroidPositions = new LinkedList<>();
-        centroidPositions.add(0);
+        centroids = new LinkedList<>();
+        centroids.add(0);
         foregroundMovement = new LinkedList<>();
         foregroundMovement.add(0);
         foregroundMovement.add(0);
@@ -83,6 +85,11 @@ public class ImageProcessor {
         change.addPropertyChangeListener(listener);
     }
 
+    // remove listener
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        change.removePropertyChangeListener(listener);
+    }
+
     // public method that does all processing
     public Mat ProcessImage(Mat newFrame) {
         current = newFrame;
@@ -94,9 +101,11 @@ public class ImageProcessor {
         getBackground();
         getBinaryImage();
         postProcessing();
+        calculateCentroid();
         calculateMovement();
-        calculatePosition();
+        calculateBoxMovement();
 
+        Log.e(TAG, "Send delta Movement: " + boxMovement.getFirst());
         change.firePropertyChange("position", boxMovement.get(1), boxMovement.getFirst());
 
         return binary;
@@ -154,107 +163,103 @@ public class ImageProcessor {
             Imgproc.dilate(binary, binary, dialElement);
     }
 
-    //TODO: This must be redone to handle when the centroid is strange
-    //store value for future usage
-    private void calculateMovement() {
+    private void calculateCentroid() {
         // calculate the centroid of binary image
         Moments moments = Imgproc.moments(binary, true);
         int centroid = (int)(moments.m10/moments.m00);
 
-        Log.d(TAG, "centroid: " + centroid);
-        Log.d(TAG, "previous Position: " + centroidPositions.getFirst());
+        Log.e(TAG, "Centroid: " + centroid);
 
+        // get the delta movement
+        int delta = centroid - centroids.getFirst();
 
-        // Find if the new centroid is close to the last centroid
+        //find out if centroid is close to last centroid, if not, count as noise
         boolean noise = false;
-        Iterator<Integer> itr = centroidPositions.iterator();
-        int delta = centroid - itr.next();
-        if (delta < MIN_THRESH || delta > MAX_THRESH) {
-            noise = true;
-        }
-
         int loops = 1;
-        while (itr.hasNext()) {
-            int d = itr.next();
-            if(d < MIN_THRESH || d > MAX_THRESH * loops) {
-                //set tempForegroundMovement to 0 as this is noise
+        for(int c : centroids) {
+            //Log.e(TAG, "abs: " +  Math.abs(centroid - c));
+            if (Math.abs(centroid - c) < MIN_THRESH) {
+                //Log.e(TAG, "Smaller than Thresh");
+                noise = true;
+                break;
+            } else if (Math.abs(centroid - c) > MAX_THRESH * loops) {
+                //Log.e(TAG, "Larger than Thresh");
                 noise = true;
                 break;
             }
+
             loops++;
         }
 
-        //Add the current centroid to storage list and remove the last if the list is "full"
-        // NOTE: May be wrong as this is a strange value??
-        centroidPositions.addFirst(centroid);
-        if (centroidPositions.size() > MAX_STORED_VALUE)
-            centroidPositions.removeLast();
+        //add current centroid and remove last if full
+        addToList(centroids, centroid, MAX_STORED_CENTROIDS);
 
-        // if noise, then add 0 as movement and remove last value to keep size consistent
-        // NOTE: we have to decide a size to use here
+        Log.e(TAG, "Noise: " + noise);
+
+
         if(noise) {
-            //set tempForegroundMovement to 0 and movement to 0;
-            //remove the last element in list as it is replaced
-            tempForegroundMovement.addFirst(0);
-            tempForegroundMovement.removeLast();
-
-            foregroundMovement.addFirst(0);
-            foregroundMovement.removeLast();
-            //return as position will not change
-            return;
+            // centroid is noise, store the movement as 0
+            addToList(tempForegroundMovement, 0, MAX_STORED_FOREGROUNDS);
+        } else {
+            // Centroid is close to previous centroids, therefore a valid value
+            addToList(tempForegroundMovement, delta, MAX_STORED_FOREGROUNDS);
         }
+    }
 
-        //The tempForegroundMovement is valid and should be stored
-        tempForegroundMovement.addFirst(delta);
-        tempForegroundMovement.removeLast();
+    private void calculateMovement() {
+        Iterator<Integer> itr = tempForegroundMovement.iterator();
+        // skipp the first value as this is the current frame
+        itr.next();
 
-        //check if the previous tempMovements is 0, if so remove noise, Will create one frame delay
-        noise = false;
-        for(int m : tempForegroundMovement) {
-            if (m == 0) {
+        // if any of the previous movements is zero then we count this as a noise
+        // and set the actuall movement to 0
+        boolean noise = false;
+        while (itr.hasNext()) {
+            int tempMovement = itr.next();
+            if (tempMovement == 0) {
+                addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
                 noise = true;
+                break;
             }
         }
 
-        if (noise) {
-            //impules detected, add 0 to movement,
-            //remove the last element in Movement and return
-
-            foregroundMovement.addFirst(0);
-            foregroundMovement.removeLast();
-            return;
+        if (!noise) {
+            // no noise, we add the temp movement to the actuall movement
+            addToList(foregroundMovement, tempForegroundMovement.getFirst(), MAX_STORED_FOREGROUNDS);
         }
-
-        //the delta is valid as movement and shall be stored
-        foregroundMovement.addFirst(delta);
-        foregroundMovement.removeLast();
     }
 
-    // based on current centroid and previous centroids
-    private void calculatePosition() {
-        //low pass filter the last foregroundMovement
-        int sum = 0;
+    private void calculateBoxMovement() {
+        //calculate a weighted sum of the previous movements
+        int totalMovement = 0;
         int i = 0;
-        for (int b : boxMovement) {
-            sum = b * (BOX_MOVE_WEIGTH - (i * BOX_MOVE_WEIGTH_REDUCE));
+        int weightSum = 0;
+        for (int m : foregroundMovement) {
+            weightSum += (10-i*2);
+            totalMovement += m*(10-i*2);
+            i++;
         }
 
-        double meanBoxMove = sum / TOTAL_BOXES;
+        //average movement
+        int meanMovement = totalMovement / weightSum;
 
-        // if the box moved in positive direction, move it 20 pixels in positive directions
-        if(meanBoxMove > 0.1) {
-            boxMovement.addFirst(20);
-        }
-        // if the box moved in negative direction, move it 20 pixels in negative directions
-        else if (meanBoxMove < -0.1) {
-            boxMovement.addFirst(-20);
-        }
+        Log.e(TAG, "meanMovement: " + meanMovement);
 
-        // else don't move at all
+        if(meanMovement > 0.1) {
+            addToList(boxMovement, 20, MAX_STORED_BOXES);
+        }
+        else if (meanMovement < -0.1) {
+            addToList(boxMovement, -20, MAX_STORED_BOXES);
+        }
         else {
-            boxMovement.addFirst(0);
+            addToList(boxMovement, 0, MAX_STORED_BOXES);
         }
 
-        boxMovement.removeLast();
+    }
+
+    private void addToList(LinkedList list, int element, int maxStoredValues) {
+        list.addFirst(element);
+        if (list.size() > maxStoredValues)
+            list.removeLast();
     }
 }

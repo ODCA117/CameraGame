@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class Player {
     private int x,y, size;
@@ -18,6 +18,7 @@ public class Player {
     private Rect rect;
     private Paint paint;
 
+    private static final String TAG = "Player";
     private static final int MoveSpeed = 5;
 
     Player (int x, int y, int size, int direction, int leftBoarder, int rightBoarder) {
@@ -26,10 +27,22 @@ public class Player {
         this.size = size;
         this.speed = MoveSpeed;
         this.direction = direction;
+        this.leftBoarder = leftBoarder;
+        this.rightBoarder = rightBoarder;
         rect = new Rect(x, y, x+size, y+size);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
-        goalX = new AtomicInteger(100);
+        goalX = new AtomicInteger(0);
+    }
+
+    public void initPlayer(int x, int goal) {
+        this.x = x;
+        goalX.set(goal);
+        if(x < goal) {
+            direction = 1;
+        } else {
+            direction = -1;
+        }
     }
 
     /**
@@ -37,32 +50,41 @@ public class Player {
      */
     void updatePosition() {
 
-        Log.d(TAG, "abs(goalX - x) = " + Math.abs(goalX.get() - x));
+        Log.e(TAG, "goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
 
-        if (Math.abs(goalX.get() - x) < 10 || x <= leftBoarder || x >= rightBoarder) {
+        if (Math.abs(goalX.get() - x) < 3) {
             speed = 0;
         } else {
             speed = MoveSpeed;
         }
         x += speed * direction;
+
+        if(x < goalX.get()) {
+            direction = -1;
+        } else {
+            direction = 1;
+        }
         rect.set(x, y, x+size, y+size);
 
     }
 
     // Set the position we want to move to
-    void setGoalPosition(int x) {
-        goalX.set(goalX.get() + x);
+    void moveGoalPosition(int x) {
+        Log.e(TAG, "deltaX: " + x );
+
         if (goalX.get() + x < leftBoarder)
             goalX.set(leftBoarder);
 
         else if (goalX.get() + x > rightBoarder)
             goalX.set(rightBoarder);
+        else
+            goalX.set(goalX.get() + x);
         Log.e(TAG, "player goal position: " + goalX.get());
         Log.e(TAG, "player current position: " + this.x);
 
-        if (x > 0)
+        if (this.x < goalX.get())
             direction = 1;
-        else if (x < 0)
+        else
             direction = -1;
     }
 

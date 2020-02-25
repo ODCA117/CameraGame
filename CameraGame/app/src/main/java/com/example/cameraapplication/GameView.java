@@ -62,17 +62,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     // Called when surface is destroyed, stop the display thread
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        displayThread.stopRunning();
-        boolean retry = true;
+        if (displayThread != null) {
+            displayThread.stopRunning();
+            boolean retry = true;
 
-        while (retry) {
-            try {
-                displayThread.join();
-            } catch (Exception e) {
-                //TODO: Catch exception
+            while (retry) {
+                try {
+                    displayThread.join();
+                } catch (Exception e) {
+                    //TODO: Catch exception
+                }
             }
+            //TODO: stop thread here
+            displayThread = null;
         }
-        //TODO: stop thread here
-        displayThread = null;
     }
 }
