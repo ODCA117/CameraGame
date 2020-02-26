@@ -134,15 +134,12 @@ public class GameEngine implements PropertyChangeListener {
     // Called from Image processor and will update the position the player should move to
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        Log.e(TAG, "call to property Change");
         if (!gameOn){
             Log.e(TAG, "Game off");
             return;
         }
         Log.e(TAG, "Game on");
         int newDelta = (int) evt.getNewValue();
-        if (newDelta == 0)
-            return;
 
         player.moveGoalPosition(newDelta);
 

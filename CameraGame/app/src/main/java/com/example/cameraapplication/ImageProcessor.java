@@ -106,7 +106,7 @@ public class ImageProcessor {
         calculateBoxMovement();
 
         Log.e(TAG, "Send delta Movement: " + boxMovement.getFirst());
-        change.firePropertyChange("position", boxMovement.get(1), boxMovement.getFirst());
+        change.firePropertyChange("position", null, boxMovement.getFirst());
 
         return binary;
     }

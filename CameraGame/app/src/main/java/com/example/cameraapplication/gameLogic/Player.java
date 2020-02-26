@@ -19,7 +19,7 @@ public class Player {
     private Paint paint;
 
     private static final String TAG = "Player";
-    private static final int MoveSpeed = 5;
+    private static final int MoveSpeed = 10;
 
     Player (int x, int y, int size, int direction, int leftBoarder, int rightBoarder) {
         this.x = x;
@@ -52,18 +52,34 @@ public class Player {
 
         Log.e(TAG, "goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
 
+        if(x < goalX.get()) {
+            direction = 1;
+        } else {
+            direction = -1;
+        }
+
         if (Math.abs(goalX.get() - x) < 3) {
             speed = 0;
         } else {
             speed = MoveSpeed;
         }
-        x += speed * direction;
 
-        if(x < goalX.get()) {
-            direction = -1;
-        } else {
-            direction = 1;
+        if(x + speed * direction < leftBoarder) {
+            x = leftBoarder;
+            Log.e(TAG, "less Than Left boarder");
         }
+
+        else if (x + speed * direction > rightBoarder) {
+            x = rightBoarder;
+            Log.e(TAG, "greater Than right boarder");
+        }
+
+        else {
+            x += speed * direction;
+        }
+
+        Log.e(TAG, "After: goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
+
         rect.set(x, y, x+size, y+size);
 
     }
@@ -77,15 +93,11 @@ public class Player {
 
         else if (goalX.get() + x > rightBoarder)
             goalX.set(rightBoarder);
+
         else
             goalX.set(goalX.get() + x);
         Log.e(TAG, "player goal position: " + goalX.get());
         Log.e(TAG, "player current position: " + this.x);
-
-        if (this.x < goalX.get())
-            direction = 1;
-        else
-            direction = -1;
     }
 
 
