@@ -3,6 +3,7 @@ package com.example.cameraapplication.gameLogic;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.cameraapplication.ImageProcessor;
 
@@ -22,6 +23,8 @@ public class GameEngine implements PropertyChangeListener {
     private long timeToSpawn;
     private Random random;
     private ImageProcessor processor;
+    private int points;
+    private TextView pointsView;
 
     private static final String TAG = "GameEngine";
 
@@ -29,6 +32,7 @@ public class GameEngine implements PropertyChangeListener {
 
     public GameEngine(ImageProcessor processor) {
         this.processor = processor;
+//        this.pointsView = pointsView;
         gameOn = false;
     }
 
@@ -54,6 +58,7 @@ public class GameEngine implements PropertyChangeListener {
         for (Obstacle o : obstacles) {
             o.drawObstacle(canvas);
         }
+//        pointsView.setText(String.valueOf(points));
     }
 
     //set up the game boarders
@@ -79,6 +84,9 @@ public class GameEngine implements PropertyChangeListener {
 
         //Add this as listener
         processor.addPropertyChangeListener(this);
+
+        points = 0;
+//        pointsView.setText(String.valueOf(0));
 
         // start game
         gameOn = true;
@@ -111,8 +119,11 @@ public class GameEngine implements PropertyChangeListener {
         List<Obstacle> removeThese = new ArrayList<>();
         for (Obstacle o : obstacles) {
             y = o.getY();
-            if (y > height + 50)
+
+            if (y > height + 5) {
+                points++;
                 removeThese.add(o);
+            }
 
             o.updatePosition();
         }

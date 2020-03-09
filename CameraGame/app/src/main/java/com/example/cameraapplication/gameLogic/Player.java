@@ -58,7 +58,7 @@ public class Player {
             direction = -1;
         }
 
-        if (Math.abs(goalX.get() - x) < 3) {
+        if (Math.abs(goalX.get() - x) < 6) {
             speed = 0;
         } else {
             speed = MoveSpeed;

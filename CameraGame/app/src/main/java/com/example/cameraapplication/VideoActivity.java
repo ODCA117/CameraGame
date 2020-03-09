@@ -1,24 +1,18 @@
 package com.example.cameraapplication;
 
-import android.hardware.Camera;
 import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cameraapplication.gameLogic.GameEngine;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
@@ -35,14 +29,9 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
     private static final int WIDTH = 480;
     private static final int HEIGHT = 620;
 
-
-    Camera mCamera;
-    CameraPreview mPreview;
-    ImageView convertedImageView;
     LinearLayout layoutForImage;
-    FrameLayout preview;
     GameView gameView;
-    TextView data1;
+    TextView pointsView;
     GameEngine gameEngine;
     ImageProcessor imageProcessor;
 
