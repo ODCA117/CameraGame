@@ -67,12 +67,12 @@ public class GameEngine implements PropertyChangeListener {
         // Create a player at (x,y) = (20, heigth - 120) (lower part is 20 pixels from bottom of the gameview)
         // player size 100*100, movement direction = positive,
         // player restricted to move between 20 from left and right boarder
-        player = new Player(20, height - 120, 100, 1, 20, width - 120);
-        player.initPlayer(20, 500);
+        player = new Player(500, height - 120, 100, 1, 20, width - 120);
+        player.initPlayer(500, 500); // Kind of useless
 
         // create a list of obstacles
         obstacles = new ArrayList<>();
-        random = new Random(0);
+        random = new Random(System.currentTimeMillis());
 
         //create a spawn rate of 1 obstacle every 2 seconds
         timeToSpawn = System.currentTimeMillis() + 2000;
@@ -125,9 +125,9 @@ public class GameEngine implements PropertyChangeListener {
         //spawn new obstacle if 2 seconds since last spawn
         if(timeToSpawn < System.currentTimeMillis()) {
             int x = 20 + random.nextInt(width - 40); // find a position in horizontal axis
-            Obstacle o = new Obstacle(x, -120, 100, 100, 15);
+            Obstacle o = new Obstacle(x, -120, 100, 100, 7);
             obstacles.add(o);
-            timeToSpawn = System.currentTimeMillis() + 2000; // calculate when next spawn should happen
+            timeToSpawn = System.currentTimeMillis() + 1000; // calculate when next spawn should happen
         }
     }
 

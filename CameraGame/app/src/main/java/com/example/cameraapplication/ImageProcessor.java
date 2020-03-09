@@ -26,14 +26,13 @@ public class ImageProcessor {
     private static int KERNELSIZE_DILATE = 1;
     private static int DILATETIMES = 1;
     private static int MIN_THRESH = 5;
-    private static int MAX_THRESH = 200;
+    private static int MAX_THRESH = 75;
     private static int MAX_STORED_BOXES = 2;
     private static int MAX_STORED_CENTROIDS = 3;
     private static int MAX_STORED_FOREGROUNDS = 3;
     private static int BOX_MOVE_WEIGTH = 10;
     private static int BOX_MOVE_WEIGTH_REDUCE = 2;
     private static int TOTAL_BOXES = 30;
-
 
     private int width, height;
 
@@ -254,7 +253,6 @@ public class ImageProcessor {
         else {
             addToList(boxMovement, 0, MAX_STORED_BOXES);
         }
-
     }
 
     private void addToList(LinkedList list, int element, int maxStoredValues) {
