@@ -1,5 +1,5 @@
 {
-  "ndkFolder": "/home/olle/Android/Sdk/ndk-bundle",
+  "ndkFolder": "C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669",
   "messages": [
     {
       "level": "INFO",
@@ -15,15 +15,23 @@
     },
     {
       "level": "INFO",
-      "message": "sdkFolder is /home/olle/Android/Sdk"
+      "message": "sdkFolder is C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk"
     },
     {
       "level": "INFO",
-      "message": "Considering /home/olle/Android/Sdk/ndk-bundle in SDK ndk-bundle folder"
+      "message": "Considering C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk-bundle in SDK ndk-bundle folder"
     },
     {
       "level": "INFO",
-      "message": "No user requested version, choosing /home/olle/Android/Sdk/ndk-bundle which is version 21.0.6113669"
+      "message": "Considering C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669 in SDK ndk folder"
+    },
+    {
+      "level": "INFO",
+      "message": "Rejected C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk-bundle in SDK ndk-bundle folder because that location has no source.properties"
+    },
+    {
+      "level": "INFO",
+      "message": "No user requested version, choosing C:\\Users\\Olle Axelsson\\AppData\\Local\\Android\\Sdk\\ndk\\21.0.6113669 which is version 21.0.6113669"
     }
   ]
 }

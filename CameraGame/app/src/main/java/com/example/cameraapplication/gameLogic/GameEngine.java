@@ -138,11 +138,15 @@ public class GameEngine implements PropertyChangeListener {
             Log.e(TAG, "Game off");
             return;
         }
-        Log.e(TAG, "Game on");
-        int newDelta = (int) evt.getNewValue();
+        //Log.e(TAG, "Game on");
+        int pos = (int) evt.getNewValue();
 
-        player.moveGoalPosition(newDelta);
+        //If the position is given the  use this
+        player.updateGoalPosition(pos);
 
-        Log.e(TAG, "player Move: " + newDelta);
+        //if the delta movement is used the use this.
+        //player.moveGoalPosition(pos);
+
+        //Log.e(TAG, "player Move: " + newDelta);
     }
 }

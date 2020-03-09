@@ -97,16 +97,48 @@ public class ImageProcessor {
 
         currentGray = new Mat(height, width, CvType.CV_8UC1);
         Imgproc.cvtColor(current, currentGray, Imgproc.COLOR_RGBA2GRAY);
+        // Processing before calculating a position
         getBackground();
         getBinaryImage();
         postProcessing();
-        calculateCentroid();
-        calculateMovement();
-        calculateBoxMovement();
 
-        Log.e(TAG, "Send delta Movement: " + boxMovement.getFirst());
-        change.firePropertyChange("position", null, boxMovement.getFirst());
+        /*
+//            IF A DELTA MOVEMENT IS CALCULATED USE THESE FUNCTIONS
+        //If the  white in the binary image takes up more than X% of the screen the we calculate the position of the centroid, otherwise ignore the image
+        if ((double)Core.countNonZero(binary)  > (double)binary.total() * 0.005) {
+            Log.e(TAG, "White takes up more than 2.5%");
+            calculateCentroidWithThresh();
+            calculateMovement();
+            calculateBoxMovement();
+            change.firePropertyChange("position", null, boxMovement.getFirst());
+        }
+        //Log.e(TAG, "NonZero: " + (double)Core.countNonZero(binary) + ", total: " + (double)binary.total() + ", 2.5%: " + (double)binary.total() * 0.005);
+        else {
+            // To little was detected, add an empty frame and move nothing
+            addToList(centroids, 0, MAX_STORED_CENTROIDS);
+            addToList(tempForegroundMovement, 0, MAX_STORED_FOREGROUNDS);
+            addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
+            addToList(boxMovement, 0, MAX_STORED_BOXES);
+        }
+*/
 
+//        IF THE CENTROID POSITION IS USED AS THE GOAL POSITION USE THIS
+
+        if ((double)Core.countNonZero(binary)  > (double)binary.total() * 0.005) {
+            Log.e(TAG, "White takes up more than 2.5%");
+            calculateCentroid();
+            calculateBoxPosition();
+            change.firePropertyChange("position", boxMovement.get(1), boxMovement.getFirst());
+        }
+        //Log.e(TAG, "NonZero: " + (double)Core.countNonZero(binary) + ", total: " + (double)binary.total() + ", 2.5%: " + (double)binary.total() * 0.005);
+        else {
+            // To little was detected, add an empty frame and move nothing
+            addToList(centroids, 0, MAX_STORED_CENTROIDS);
+            addToList(tempForegroundMovement, 0, MAX_STORED_FOREGROUNDS);
+            addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
+            addToList(boxMovement, 0, MAX_STORED_BOXES);
+        }
+        //Log.e(TAG, "Send delta Movement: " + boxMovement.getFirst());
         return binary;
     }
 
@@ -115,7 +147,6 @@ public class ImageProcessor {
         //if no background exists before, this frame is the background
         if(backgroundGray == null) {
             backgroundGray = currentGray;
-
         }
         // Else combine current frame with previous background
         else {
@@ -162,27 +193,25 @@ public class ImageProcessor {
             Imgproc.dilate(binary, binary, dialElement);
     }
 
-    private void calculateCentroid() {
+    private void calculateCentroidWithThresh() {
         // calculate the centroid of binary image
         Moments moments = Imgproc.moments(binary, true);
         int centroid = (int)(moments.m10/moments.m00);
 
-        Log.e(TAG, "Centroid: " + centroid);
+        //Log.e(TAG, "Centroid: " + centroid);
 
         // get the delta movement
         int delta = centroid - centroids.getFirst();
 
         //find out if centroid is close to last centroid, if not, count as noise
+//        dont
         boolean noise = false;
         int loops = 1;
         for(int c : centroids) {
-            //Log.e(TAG, "abs: " +  Math.abs(centroid - c));
             if (Math.abs(centroid - c) < MIN_THRESH) {
-                //Log.e(TAG, "Smaller than Thresh");
                 noise = true;
                 break;
             } else if (Math.abs(centroid - c) > MAX_THRESH * loops) {
-                //Log.e(TAG, "Larger than Thresh");
                 noise = true;
                 break;
             }
@@ -193,7 +222,7 @@ public class ImageProcessor {
         //add current centroid and remove last if full
         addToList(centroids, centroid, MAX_STORED_CENTROIDS);
 
-        Log.e(TAG, "Noise: " + noise);
+        //Log.e(TAG, "Noise: " + noise);
 
 
         if(noise) {
@@ -205,13 +234,20 @@ public class ImageProcessor {
         }
     }
 
+    private void calculateCentroid() {
+        Moments moments = Imgproc.moments(binary, true);
+        int centroid = (int)(moments.m10/moments.m00);
+        addToList(centroids, centroid, MAX_STORED_CENTROIDS);
+    }
+
+    //Calculate how much the centroid moved
     private void calculateMovement() {
         Iterator<Integer> itr = tempForegroundMovement.iterator();
         // skipp the first value as this is the current frame
         itr.next();
 
         // if any of the previous movements is zero then we count this as a noise
-        // and set the actuall movement to 0
+        // and set the actual movement to 0
         boolean noise = false;
         while (itr.hasNext()) {
             int tempMovement = itr.next();
@@ -228,6 +264,7 @@ public class ImageProcessor {
         }
     }
 
+    //Calculate box movement fixed delta
     private void calculateBoxMovement() {
         //calculate a weighted sum of the previous movements
         int totalMovement = 0;
@@ -239,10 +276,10 @@ public class ImageProcessor {
             i++;
         }
 
-        //average movement
+        //average movement Will be in whole numbers so this is not totally accurate
         int meanMovement = totalMovement / weightSum;
 
-        Log.e(TAG, "meanMovement: " + meanMovement);
+        //Log.e(TAG, "meanMovement: " + meanMovement);
 
         if(meanMovement > 0.1) {
             addToList(boxMovement, 20, MAX_STORED_BOXES);
@@ -253,6 +290,13 @@ public class ImageProcessor {
         else {
             addToList(boxMovement, 0, MAX_STORED_BOXES);
         }
+    }
+
+    //calculate box movement and use centroid position
+    private void calculateBoxPosition() {
+        int newRange = 940;
+        int value = ((centroids.getFirst() * newRange / 720)) + 20;
+        addToList(boxMovement, value, MAX_STORED_BOXES);
     }
 
     private void addToList(LinkedList list, int element, int maxStoredValues) {

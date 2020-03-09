@@ -50,7 +50,7 @@ public class Player {
      */
     void updatePosition() {
 
-        Log.e(TAG, "goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
+        //Log.e(TAG, "goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
 
         if(x < goalX.get()) {
             direction = 1;
@@ -66,19 +66,19 @@ public class Player {
 
         if(x + speed * direction < leftBoarder) {
             x = leftBoarder;
-            Log.e(TAG, "less Than Left boarder");
+            //Log.e(TAG, "less Than Left boarder");
         }
 
         else if (x + speed * direction > rightBoarder) {
             x = rightBoarder;
-            Log.e(TAG, "greater Than right boarder");
+            //Log.e(TAG, "greater Than right boarder");
         }
 
         else {
             x += speed * direction;
         }
 
-        Log.e(TAG, "After: goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
+        //Log.e(TAG, "After: goalX: " + goalX.get() + ", CurrentPosition: " + x  + ", speed: " + speed + ", direction: " + direction);
 
         rect.set(x, y, x+size, y+size);
 
@@ -86,7 +86,7 @@ public class Player {
 
     // Set the position we want to move to
     void moveGoalPosition(int x) {
-        Log.e(TAG, "deltaX: " + x );
+        //Log.e(TAG, "deltaX: " + x );
 
         if (goalX.get() + x < leftBoarder)
             goalX.set(leftBoarder);
@@ -96,8 +96,19 @@ public class Player {
 
         else
             goalX.set(goalX.get() + x);
-        Log.e(TAG, "player goal position: " + goalX.get());
-        Log.e(TAG, "player current position: " + this.x);
+        //Log.e(TAG, "player goal position: " + goalX.get());
+        //Log.e(TAG, "player current position: " + this.x);
+    }
+
+    void updateGoalPosition(int x) {
+        if ( x < leftBoarder)
+            goalX.set(leftBoarder);
+
+        else if ( x > rightBoarder)
+            goalX.set(rightBoarder);
+
+        else
+            goalX.set(x);
     }
 
 

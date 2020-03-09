@@ -6,8 +6,8 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="21"
-8-->/home/olle/git/CameraApplication/OpenCV-android-sdk/sdk/java/AndroidManifest.xml
+8-->D:\Dev\git\CameraGame\OpenCV-android-sdk\sdk\java\AndroidManifest.xml
 9        android:targetSdkVersion="26" />
-9-->/home/olle/git/CameraApplication/OpenCV-android-sdk/sdk/java/AndroidManifest.xml
+9-->D:\Dev\git\CameraGame\OpenCV-android-sdk\sdk\java\AndroidManifest.xml
 10
 11</manifest>
