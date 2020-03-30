@@ -102,25 +102,9 @@ public class ImageProcessor {
         getBinaryImage();
         postProcessing();
 
-        /*
-//            IF A DELTA MOVEMENT IS CALCULATED USE THESE FUNCTIONS
-        //If the  white in the binary image takes up more than X% of the screen the we calculate the position of the centroid, otherwise ignore the image
-        if ((double)Core.countNonZero(binary)  > (double)binary.total() * 0.005) {
-            Log.e(TAG, "White takes up more than 2.5%");
-            calculateCentroidWithThresh();
-            calculateMovement();
-            calculateBoxMovement();
-            change.firePropertyChange("position", null, boxMovement.getFirst());
-        }
-        //Log.e(TAG, "NonZero: " + (double)Core.countNonZero(binary) + ", total: " + (double)binary.total() + ", 2.5%: " + (double)binary.total() * 0.005);
-        else {
-            // To little was detected, add an empty frame and move nothing
-            addToList(centroids, 0, MAX_STORED_CENTROIDS);
-            addToList(tempForegroundMovement, 0, MAX_STORED_FOREGROUNDS);
-            addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
-            addToList(boxMovement, 0, MAX_STORED_BOXES);
-        }
-*/
+        //calculateCentroidWithThresh();
+        //calculateBoxMovement();
+        //change.firePropertyChange("position", null, boxMovement.getFirst());
 
 //        IF THE CENTROID POSITION IS USED AS THE GOAL POSITION USE THIS
 
@@ -138,6 +122,7 @@ public class ImageProcessor {
             addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
             addToList(boxMovement, 0, MAX_STORED_BOXES);
         }
+
         //Log.e(TAG, "Send delta Movement: " + boxMovement.getFirst());
         return binary;
     }
@@ -164,7 +149,7 @@ public class ImageProcessor {
     // convert to gray and convert to binary
     private void getBinaryImage() {
         //apply gaussianfilter
-        Imgproc.GaussianBlur(currentGray, currentGray, new Size(gauss,gauss), 0);
+        //Imgproc.GaussianBlur(currentGray, currentGray, new Size(gauss,gauss), 0);
 
         // subtract backgroundGray from current image and store in currentGray
         Core.subtract(currentGray, backgroundGray, currentGray);
@@ -215,15 +200,11 @@ public class ImageProcessor {
                 noise = true;
                 break;
             }
-
             loops++;
         }
 
         //add current centroid and remove last if full
         addToList(centroids, centroid, MAX_STORED_CENTROIDS);
-
-        //Log.e(TAG, "Noise: " + noise);
-
 
         if(noise) {
             // centroid is noise, store the movement as 0
@@ -232,23 +213,14 @@ public class ImageProcessor {
             // Centroid is close to previous centroids, therefore a valid value
             addToList(tempForegroundMovement, delta, MAX_STORED_FOREGROUNDS);
         }
-    }
 
-    private void calculateCentroid() {
-        Moments moments = Imgproc.moments(binary, true);
-        int centroid = (int)(moments.m10/moments.m00);
-        addToList(centroids, centroid, MAX_STORED_CENTROIDS);
-    }
-
-    //Calculate how much the centroid moved
-    private void calculateMovement() {
         Iterator<Integer> itr = tempForegroundMovement.iterator();
         // skipp the first value as this is the current frame
         itr.next();
 
         // if any of the previous movements is zero then we count this as a noise
         // and set the actual movement to 0
-        boolean noise = false;
+        noise = false;
         while (itr.hasNext()) {
             int tempMovement = itr.next();
             if (tempMovement == 0) {
@@ -263,6 +235,36 @@ public class ImageProcessor {
             addToList(foregroundMovement, tempForegroundMovement.getFirst(), MAX_STORED_FOREGROUNDS);
         }
     }
+
+    private void calculateCentroid() {
+        Moments moments = Imgproc.moments(binary, true);
+        int centroid = (int)(moments.m10/moments.m00);
+        addToList(centroids, centroid, MAX_STORED_CENTROIDS);
+    }
+
+    //Calculate how much the centroid moved
+//    private void filterMovement() {
+//        Iterator<Integer> itr = tempForegroundMovement.iterator();
+//        // skipp the first value as this is the current frame
+//        itr.next();
+//
+//        // if any of the previous movements is zero then we count this as a noise
+//        // and set the actual movement to 0
+//        boolean noise = false;
+//        while (itr.hasNext()) {
+//            int tempMovement = itr.next();
+//            if (tempMovement == 0) {
+//                addToList(foregroundMovement, 0, MAX_STORED_FOREGROUNDS);
+//                noise = true;
+//                break;
+//            }
+//        }
+//
+//        if (!noise) {
+//            // no noise, we add the temp movement to the actuall movement
+//            addToList(foregroundMovement, tempForegroundMovement.getFirst(), MAX_STORED_FOREGROUNDS);
+//        }
+//    }
 
     //Calculate box movement fixed delta
     private void calculateBoxMovement() {

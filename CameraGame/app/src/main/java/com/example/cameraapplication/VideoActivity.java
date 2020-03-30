@@ -8,7 +8,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.cameraapplication.gameLogic.GameEngine;
+import com.example.cameraapplication.game.GameEngine;
+import com.example.cameraapplication.game.GameView;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraActivity;
@@ -179,8 +180,6 @@ public class VideoActivity extends CameraActivity implements CameraBridgeViewBas
 
         //process the image
         mRgba = imageProcessor.ProcessImage(mRgba);
-
-
         return mRgba; // return the matrix we want to display
     }
 }
